@@ -9,18 +9,23 @@ The workflow is built using [snakemake](https://snakemake.readthedocs.io/en/stab
 
 1. Download genome reference from NCBI (`ncbi tools`), or use manual input (`fasta`, `gff` format)
 2. Check quality of input read data (`FastQC`)
-3. Trim adapters and apply quality filtering (`fastp`)
+3. Processing fastq files:
+   1. Extract UMIs (optional)
+   2. Trim adapters and apply quality filtering (`fastp`)
 4. Map reads to reference genome using:
    1. (`Bowtie2`)[http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml] _or_
    2. (`BWA-MEM2`)[https://github.com/bwa-mem2/bwa-mem2] _or_
    3. (`STAR`)[https://github.com/alexdobin/STAR]
    4. (`minimap2`)[https://github.com/lh3/minimap2]
-5. Determine experiment type, get mapping stats (`rseqc`)
-6. Generate `bigwig` or `bedgaph` coverage profiles (`deeptools`)
-7. Quantify variations and SNPs (`bcftools`, `freebayes`)
-8. Predict effect of variants such as premature stop codons (`VEP` or `SnpEff`)
-9. Create consensus of variants and create a visual report (`R markdown`)
-10. Collect statistics from tool output (`MultiQC`)
+5. Process alignment files:
+   1. Sort and index
+   2. Deduplication (optional)
+6. Determine experiment type, get mapping stats (`rseqc`)
+7. Generate `bigwig` or `bedgaph` coverage profiles (`deeptools`)
+8. Quantify variations and SNPs (`bcftools`, `freebayes`)
+9. Predict effect of variants such as premature stop codons (`VEP` or `SnpEff`)
+10. Create consensus of variants and create a visual report (`R markdown`)
+11. Collect statistics from tool output (`MultiQC`)
 
 ## Running the workflow
 
