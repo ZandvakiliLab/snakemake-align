@@ -146,6 +146,16 @@ def get_multiqc_input(wildcards):
         "results/fastp/{sample}.json",
         sample=samples.index,
     )
+    if config["processing"]["umi_extraction"]["enabled"]:
+        result += expand(
+            "results/umi_tools/extract/{sample}.log",
+            sample=samples.index,
+        )
+    if config["mapping_postprocessing"]["deduplication"]["enabled"]:
+        result += expand(
+            "results/processed_alignment/dedup/{sample}.log",
+            sample=samples.index,
+        )
     result += expand(
         "results/rseqc/{tool}/{sample}.txt",
         sample=samples.index,
