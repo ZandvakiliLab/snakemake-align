@@ -2,7 +2,7 @@ samplesheet: "config/samples.tsv"
 
 get_genome:
   database: "ncbi"
-  assembly: "GCF_000307535.1"
+  assembly: "GCF_000845245.1"
   fasta: Null
   gff: Null
   gff_source_type:
