@@ -47,8 +47,28 @@ properties:
           extra:
             type: string
             description: additional arguments to pass to fastplong
+      umi_extraction:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            description: whether to enable UMI extraction
+            default: false
+          tool:
+            type: string
+            description: UMI extraction tool to use, one of 'umi_tools'
+            default: umi_tools
+          umi_tools:
+            type: object
+            properties:
+              extra:
+                type: string
+                description: additional arguments to pass to umi_tools extract
+        required:
+          - enabled
     required:
       - tool
+
   mapping:
     type: object
     properties:
@@ -117,21 +137,43 @@ properties:
           sort_extra:
             type: string
             description: additional arguments to pass to the sorting tool
-      samtools_sort:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to Samtools sort
-            default: -m 4G
-      samtools_index:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to Samtools index
-    required:
-      - tool
+
+  mapping_postprocessing:
+      type: object
+      properties:
+        samtools_sort:
+          type: object
+          properties:
+            extra:
+              type: string
+              description: additional arguments to pass to Samtools sort
+              default: -m 4G
+        samtools_index:
+          type: object
+          properties:
+            extra:
+              type: string
+              description: additional arguments to pass to Samtools index
+        deduplication:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              description: whether to enable deduplication
+              default: false
+            tool:
+              type: string
+              description: deduplication tool to use, one of 'umi_tools'
+              default: umi_tools
+            umi_tools:
+              type: object
+              properties:
+                extra:
+                  type: string
+                  description: additional arguments to pass to umi_tools dedup
+          required:
+            - enabled
+
   mapping_stats:
     type: object
     properties:
@@ -168,6 +210,7 @@ properties:
       - rseqc_infer_experiment
       - rseqc_bam_stat
       - deeptools_coverage
+
   variant_calling:
     type: object
     properties:

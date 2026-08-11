@@ -1,2 +1,2 @@
 sample	description	read1	read2
-SRRSRR16301861	HCMV PRO-seq	data/SRR16301861_1.fastq.gz	data/SRR16301861_2.fastq.gz
+SRR16301861	HCMV PRO-seq	data/SRR16301861_1.fastq.gz	data/SRR16301861_2.fastq.gz

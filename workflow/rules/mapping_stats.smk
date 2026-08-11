@@ -1,35 +1,3 @@
-rule samtools_sort:
-    input:
-        get_bam,
-    output:
-        "results/samtools/sort/{sample}.bam",
-    log:
-        "results/samtools/sort/{sample}.log",
-    threads: 2
-    params:
-        extra=config["mapping"]["samtools_sort"]["extra"],
-    message:
-        "re-sort reads after mapping regardless if mapper did"
-    wrapper:
-        "v9.4.1/bio/samtools/sort"
-
-
-rule samtools_index:
-    input:
-        "results/samtools/sort/{sample}.bam",
-    output:
-        "results/samtools/sort/{sample}.bam.bai",
-    log:
-        "results/samtools/sort/{sample}_index.log",
-    threads: 2
-    params:
-        extra=config["mapping"]["samtools_index"]["extra"],
-    message:
-        "index reads"
-    wrapper:
-        "v9.4.1/bio/samtools/index"
-
-
 rule gffread_gff:
     input:
         fasta=rules.get_genome.output.fasta,
@@ -49,7 +17,7 @@ rule gffread_gff:
 
 rule rseqc_infer_experiment:
     input:
-        aln="results/samtools/sort/{sample}.bam",
+        aln=get_processed_bam,
         refgene="results/get_genome/genome.bed",
     output:
         "results/rseqc/infer_experiment/{sample}.txt",
@@ -65,7 +33,7 @@ rule rseqc_infer_experiment:
 
 rule rseqc_bam_stat:
     input:
-        "results/samtools/sort/{sample}.bam",
+        get_processed_bam,
     output:
         "results/rseqc/bam_stat/{sample}.txt",
     log:
@@ -81,8 +49,8 @@ rule rseqc_bam_stat:
 
 rule deeptools_coverage:
     input:
-        bam="results/samtools/sort/{sample}.bam",
-        bai="results/samtools/sort/{sample}.bam.bai",
+        bam=get_processed_bam,
+        bai=get_processed_bam_index,
     output:
         "results/deeptools/coverage/{sample}.bw",
     log:

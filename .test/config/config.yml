@@ -19,6 +19,11 @@ processing:
     extra: ""
   fastplong:
     extra: ""
+  umi_extraction:
+    enabled: true  # Set to true to enable UMI extraction
+    tool: "umi_tools"
+    umi_tools:
+      extra: "--bc-pattern=NNNNNNNN --bc-pattern2=NNNNNNNN" 
 
 mapping:
   tool: "bwa_mem2"
@@ -44,11 +49,18 @@ mapping:
     extra: "-ax map-ont"
     sorting: "coordinate"
     sort_extra: ""
+
+mapping_postprocessing:
   samtools_sort:
     extra: "-m 4G"
   samtools_index:
     extra: ""
-
+  deduplication:
+    enabled: true
+    tool: "umi_tools"
+    umi_tools:
+      extra: "--paired"  # or directional, cluster, adjacency, etc.  
+  
 mapping_stats:
   gffread:
     extra: ""

@@ -1,6 +1,6 @@
 rule bcftools_pileup:
     input:
-        alignments="results/samtools/sort/{sample}.bam",
+        alignments=get_processed_bam,
         ref=rules.get_genome.output.fasta,
         index=rules.get_genome.output.fai,
     output:
