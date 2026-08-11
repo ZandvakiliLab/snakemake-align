@@ -9,3 +9,4 @@ logs/**
 .vscode/*
 *.Rdata
 *.RData
+.test/.cache/
