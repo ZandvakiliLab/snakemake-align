@@ -163,7 +163,7 @@ properties:
               default: false
             tool:
               type: string
-              description: deduplication tool to use, one of 'umi_tools'
+              description: deduplication tool to use, one of 'umi_tools', "samtools_markdup", or "picard_markduplicates"
               default: umi_tools
             umi_tools:
               type: object

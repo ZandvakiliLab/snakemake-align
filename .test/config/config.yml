@@ -57,9 +57,13 @@ mapping_postprocessing:
     extra: ""
   deduplication:
     enabled: true
-    tool: "umi_tools"
+    tool: "picard"
     umi_tools:
       extra: "--paired"  # or directional, cluster, adjacency, etc.  
+    samtools:
+      extra: "-c -r --no-PG"
+    picard:
+      extra: ""
   
 mapping_stats:
   gffread:

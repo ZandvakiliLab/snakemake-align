@@ -61,6 +61,10 @@ mapping_postprocessing:
     tool: "umi_tools"
     umi_tools:
       extra: ""  # or directional, cluster, adjacency, etc.  
+    samtools:
+      extra: "-c -r --no-PG"
+    picard:
+      extra: ""
 
 mapping_stats:
   gffread:

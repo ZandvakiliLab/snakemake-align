@@ -1,6 +1,37 @@
-rule samtools_sort:
+rule samtools_collate:
     input:
         get_bam,
+    output:
+        temp("results/processed_alignment/collate/{sample}.bam"),
+    log:
+        "results/processed_alignment/collate/{sample}.log",
+    threads: 2
+    params:
+        extra="-f",
+    wrapper:
+        "v9.15.0/bio/samtools/collate"
+
+
+rule samtools_fixmate:
+    # Only necessary if using samtools markdup for deduplication, as it requires correct mate information
+    input:
+        rules.samtools_collate.output,
+    output:
+        temp("results/processed_alignment/fixmate/{sample}.bam"),
+    log:
+        "results/processed_alignment/fixmate/{sample}.log",
+    threads: 1
+    params:
+        extra="-m",
+    message:
+        "Fixing mate information in {wildcards.sample}"
+    wrapper:
+        "v9.15.0/bio/samtools/fixmate/"
+
+
+rule samtools_sort:
+    input:
+        get_bam_2,
     output:
         temp("results/processed_alignment/sort/{sample}.bam"),
     log:
@@ -30,14 +61,19 @@ rule samtools_index:
         "v9.4.1/bio/samtools/index"
 
 
+########################
+# DEDUPLICATION RULES
+########################
+
+
 rule umi_tools_dedup:
     input:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
     output:
-        temp("results/processed_alignment/dedup/{sample}.bam"),
+        temp("results/processed_alignment/dedup/umi_tools/{sample}.bam"),
     log:
-        "results/processed_alignment/dedup/{sample}.log",
+        "results/processed_alignment/dedup/umi_tools/{sample}.log",
     container:
         "docker://quay.io/biocontainers/umi_tools:1.1.6--py310h1fe012e_0"
     threads: 5
@@ -57,13 +93,59 @@ rule umi_tools_dedup:
         """
 
 
+rule samtools_markdup:
+    input:
+        aln=rules.samtools_sort.output,
+    output:
+        bam=temp("results/processed_alignment/dedup/samtools/{sample}.bam"),
+        metrics="results/processed_alignment/dedup/samtools/{sample}.txt",
+    log:
+        "results/processed_alignment/dedup/samtools/{sample}.log",
+    threads: 2
+    params:
+        extra=config["mapping_postprocessing"]["deduplication"]["samtools"]["extra"],
+    wrapper:
+        "v9.15.0/bio/samtools/markdup"
+
+
+rule add_RG:
+    input:
+        rules.samtools_sort.output,
+    output:
+        temp("results/processed_alignment/dedup/picard/{sample}_addRG.bam"),
+    log:
+        "results/processed_alignment/dedup/picard/{sample}_addRG.log",
+    resources:
+        mem_mb=1024,
+    params:
+        extra="--RGLB lib1 --RGPL illumina --RGPU {sample} --RGSM {sample}",
+    wrapper:
+        "v9.15.0/bio/picard/addorreplacereadgroups"
+
+
+rule markduplicates_bam:
+    input:
+        bams=rules.add_RG.output,
+    output:
+        bam=temp("results/processed_alignment/dedup/picard/{sample}.bam"),
+        metrics="results/processed_alignment/dedup/picard/{sample}.metrics.txt",
+    log:
+        "results/processed_alignment/dedup/picard/{sample}.log",
+    resources:
+        mem_mb=1024,
+    params:
+        extra="--REMOVE_DUPLICATES true",
+    wrapper:
+        "v9.15.0/bio/picard/markduplicates"
+
+
 rule samtools_index_dedup:
     input:
-        rules.umi_tools_dedup.output,
+        get_processed_bam,
     output:
-        temp("results/processed_alignment/dedup/{sample}.bam.bai"),
+        temp("results/processed_alignment/dedup/{tool}/{sample}.bam.bai"),
     log:
-        "results/processed_alignment/dedup/{sample}_index.log",
+        "results/processed_alignment/dedup/{tool}/{sample}_index.log",
     threads: 2
     params:
         extra=config["mapping_postprocessing"]["samtools_index"]["extra"],
@@ -71,6 +153,11 @@ rule samtools_index_dedup:
         "index reads"
     wrapper:
         "v9.4.1/bio/samtools/index"
+
+
+########################
+# BAM TO CRAM RULES
+########################
 
 
 rule bam_to_cram:

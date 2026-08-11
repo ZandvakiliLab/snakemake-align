@@ -85,21 +85,34 @@ def get_bam(wildcards):
     )
 
 
-###############################
-# ALIGNMENT PROCESSING-RELATED FUNCTIONS
-###############################
+def get_bam_2(wildcards):
+    if (
+        config["mapping_postprocessing"]["deduplication"]["enabled"]
+        and config["mapping_postprocessing"]["deduplication"]["tool"] == "samtools"
+    ):
+        return rules.samtools_fixmate.output
+    else:
+        return get_bam(wildcards)
 
 
 def get_processed_bam(wildcards):
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
-        return rules.umi_tools_dedup.output
+        return expand(
+            "results/processed_alignment/dedup/{tool}/{sample}.bam",
+            sample=wildcards.sample,
+            tool=config["mapping_postprocessing"]["deduplication"]["tool"],
+        )
     else:
         return rules.samtools_sort.output
 
 
 def get_processed_bam_index(wildcards):
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
-        return rules.samtools_index_dedup.output
+        return expand(
+            "results/processed_alignment/dedup/{tool}/{sample}.bam.bai",
+            sample=wildcards.sample,
+            tool=config["mapping_postprocessing"]["deduplication"]["tool"],
+        )
     else:
         return rules.samtools_index.output
 
@@ -152,10 +165,17 @@ def get_multiqc_input(wildcards):
             sample=samples.index,
         )
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
-        result += expand(
-            "results/processed_alignment/dedup/{sample}.log",
-            sample=samples.index,
-        )
+        if config["mapping_postprocessing"]["deduplication"]["tool"] == "samtools":
+            result += expand(
+                "results/processed_alignment/dedup/samtools/{sample}.txt",
+                sample=samples.index,
+            )
+        else:
+            result += expand(
+                "results/processed_alignment/dedup/{tool}/{sample}.log",
+                sample=samples.index,
+                tool=config["mapping_postprocessing"]["deduplication"]["tool"],
+            )
     result += expand(
         "results/rseqc/{tool}/{sample}.txt",
         sample=samples.index,
