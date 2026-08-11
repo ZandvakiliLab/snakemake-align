@@ -20,6 +20,7 @@ The workflow is built using [snakemake](https://snakemake.readthedocs.io/en/stab
 5. Process alignment files:
    1. Sort and index
    2. Deduplication (optional)
+   3. Convert to cram files
 6. Determine experiment type, get mapping stats (`rseqc`)
 7. Generate `bigwig` or `bedgaph` coverage profiles (`deeptools`)
 8. Quantify variations and SNPs (`bcftools`, `freebayes`)

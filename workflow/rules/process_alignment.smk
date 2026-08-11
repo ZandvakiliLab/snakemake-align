@@ -2,7 +2,7 @@ rule samtools_sort:
     input:
         get_bam,
     output:
-        "results/processed_alignment/sort/{sample}.bam",
+        temp("results/processed_alignment/sort/{sample}.bam"),
     log:
         "results/processed_alignment/sort/{sample}.log",
     threads: 2
@@ -18,7 +18,7 @@ rule samtools_index:
     input:
         rules.samtools_sort.output,
     output:
-        "results/processed_alignment/sort/{sample}.bam.bai",
+        temp("results/processed_alignment/sort/{sample}.bam.bai"),
     log:
         "results/processed_alignment/sort/{sample}_index.log",
     threads: 2
@@ -35,7 +35,7 @@ rule umi_tools_dedup:
         bam=rules.samtools_sort.output,
         bai=rules.samtools_index.output,
     output:
-        "results/processed_alignment/dedup/{sample}.bam",
+        temp("results/processed_alignment/dedup/{sample}.bam"),
     log:
         "results/processed_alignment/dedup/{sample}.log",
     container:
@@ -61,7 +61,7 @@ rule samtools_index_dedup:
     input:
         rules.umi_tools_dedup.output,
     output:
-        "results/processed_alignment/dedup/{sample}.bam.bai",
+        temp("results/processed_alignment/dedup/{sample}.bam.bai"),
     log:
         "results/processed_alignment/dedup/{sample}_index.log",
     threads: 2
@@ -71,3 +71,33 @@ rule samtools_index_dedup:
         "index reads"
     wrapper:
         "v9.4.1/bio/samtools/index"
+
+
+rule bam_to_cram:
+    input:
+        bam=get_processed_bam,
+        fa=rules.get_genome.output.fasta,
+    output:
+        "results/processed_alignment/cram/{sample}.cram",
+    log:
+        "results/processed_alignment/cram/{sample}.cram.log",
+    threads: 2
+    params:
+        extra=lambda wildcards, input: f"-C -T {input.fa}",  # optional params string
+        region="",  # optional region string
+    wrapper:
+        "v8.1.1/bio/samtools/view"
+
+
+rule index_cram:
+    input:
+        rules.bam_to_cram.output,
+    output:
+        "results/processed_alignment/cram/{sample}.cram.crai",
+    log:
+        "results/processed_alignment/cram/{sample}_index.log",
+    threads: 4  # This value - 1 will be sent to -@
+    params:
+        extra="",  # optional params string
+    wrapper:
+        "v8.1.1/bio/samtools/index"

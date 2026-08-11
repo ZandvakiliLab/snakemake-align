@@ -49,3 +49,4 @@ rule all:
             "results/report/{caller}_report.pdf",
             caller=config["variant_calling"]["tool"],
         ),
+        expand("results/processed_alignment/cram/{sample}.cram.crai", sample=samples.index),
