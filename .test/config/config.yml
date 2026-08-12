@@ -23,7 +23,7 @@ processing:
     enabled: true  # Set to true to enable UMI extraction
     tool: "umi_tools"
     umi_tools:
-      extra: "--bc-pattern=NNNNNNNN --bc-pattern2=NNNNNNNN" 
+      extra: "--bc-pattern=NNNNNNNN --bc-pattern2=NNNNNNNN"
 
 mapping:
   tool: "bwa_mem2"
@@ -59,12 +59,12 @@ mapping_postprocessing:
     enabled: true
     tool: "picard"
     umi_tools:
-      extra: "--paired"  # or directional, cluster, adjacency, etc.  
+      extra: "--paired"  # or directional, cluster, adjacency, etc.
     samtools:
       extra: "-c -r --no-PG"
     picard:
       extra: ""
-  
+      
 mapping_stats:
   gffread:
     extra: ""
@@ -79,10 +79,10 @@ mapping_stats:
 variant_calling:
   tool: "freebayes"
   bcftools_pileup:
-    uncompressed: False
+    uncompressed: false
     extra: "--max-depth 1000 --min-BQ 20"
   bcftools_call:
-    uncompressed: False
+    uncompressed: false
     caller: "-c"
     extra: ""
   bcftools_view:
@@ -96,7 +96,7 @@ variant_calling:
 variant_annotation:
   tool: "vep"
   vep:
-    convert_gff: True
+    convert_gff: true
     plugins: []
     extra: "--everything --species custom_bacteria --distance 0"
   snpeff:
