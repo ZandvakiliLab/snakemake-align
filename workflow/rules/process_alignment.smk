@@ -98,12 +98,12 @@ rule samtools_markdup:
         aln=rules.samtools_sort.output,
     output:
         bam=temp("results/processed_alignment/dedup/samtools/{sample}.bam"),
-        metrics="results/processed_alignment/dedup/samtools/{sample}.txt",
+        metrics="results/processed_alignment/dedup/samtools/{sample}_markdup.json",
     log:
         "results/processed_alignment/dedup/samtools/{sample}.log",
     threads: 2
     params:
-        extra=config["mapping_postprocessing"]["deduplication"]["samtools"]["extra"],
+        extra=config["mapping_postprocessing"]["deduplication"]["samtools"]["extra"] + " --json",
     wrapper:
         "v9.15.0/bio/samtools/markdup"
 

@@ -26,6 +26,7 @@ rule multiqc:
         "results/multiqc/multiqc.log",
     params:
         extra=config["qc"]["multiqc"]["extra"],
+        use_input_files_only=True
     message:
         "generating MultiQC report for seq data"
     wrapper:

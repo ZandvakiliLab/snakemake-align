@@ -167,7 +167,7 @@ def get_multiqc_input(wildcards):
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
         if config["mapping_postprocessing"]["deduplication"]["tool"] == "samtools":
             result += expand(
-                "results/processed_alignment/dedup/samtools/{sample}.txt",
+                "results/processed_alignment/dedup/samtools/{sample}_markdup.json",
                 sample=samples.index,
             )
         else:

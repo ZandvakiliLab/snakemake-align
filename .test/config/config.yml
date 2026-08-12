@@ -57,7 +57,7 @@ mapping_postprocessing:
     extra: ""
   deduplication:
     enabled: true
-    tool: "picard"
+    tool: "samtools"
     umi_tools:
       extra: "--paired"  # or directional, cluster, adjacency, etc.
     samtools:
