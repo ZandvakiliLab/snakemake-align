@@ -1,6 +1,6 @@
 rule star_index:
     input:
-        fasta=rules.get_genome.output.fasta,
+        fasta="results/genome/genome.fasta",
     output:
         directory("results/star/index/"),
     log:

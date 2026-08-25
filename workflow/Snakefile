@@ -6,18 +6,14 @@ configfile: "config/config.yml"
 # load rules
 # -----------------------------------------------------
 include: "rules/common.smk"
-include: "rules/process_reads.smk"
+include: "rules/prepare_genome.smk"
 include: "rules/bowtie2.smk"
 include: "rules/bwamem2.smk"
 include: "rules/star.smk"
 include: "rules/minimap2.smk"
 include: "rules/process_alignment.smk"
 include: "rules/mapping_stats.smk"
-include: "rules/bcftools.smk"
-include: "rules/freebayes.smk"
-include: "rules/variant_annotation.smk"
 include: "rules/qc.smk"
-include: "rules/report.smk"
 
 
 # container definition (optional)
@@ -45,10 +41,6 @@ rule all:
     default_target: True
     input:
         "results/multiqc/multiqc_report.html",
-        expand(
-            "results/report/{caller}_report.pdf",
-            caller=config["variant_calling"]["tool"],
-        ),
         expand(
             "results/processed_alignment/cram/{sample}.cram.crai", sample=samples.index
         ),

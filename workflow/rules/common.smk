@@ -16,6 +16,24 @@ validate(samples, schema="../../config/schemas/samples.schema.yml")
 validate(config, schema="../../config/schemas/config.schema.yml")
 
 ###############################
+# GENOME-RELATED FUNCTIONS
+###############################
+
+REFS = config["genome"]  # dict of all reference blocks
+REF_KEYS = list(REFS.keys())  # e.g. ["host", "virus", "spike"]
+SPIKE_KEY = "spike"  # which reference is the spike-in
+
+
+def get_genome_files(wildcards):
+    files = []
+    for genome, vals in REFS.items():
+        if vals["prefix"]:
+            files.append(f"results/genome/{genome}_prefix.{wildcards.filetype}")
+        else:
+            files.append(f"results/genome/{genome}.{wildcards.filetype}")
+    return files
+
+###############################
 # FASTQ-RELATED FUNCTIONS
 ###############################
 
@@ -36,9 +54,9 @@ def is_paired_end():
 # get processed fastq files (after fastp or umi_tools)
 def get_processed_fastq(wildcards, regex=None):
     processed_fastq = expand(
-        "results/{tool}/{{sample}}_{read}.fastq.gz",
+        "{dir}/{{sample}}_{read}.fastq.gz",
         read=["read1", "read2"] if is_paired_end() else ["read1"],
-        tool=config["processing"]["tool"],
+        dir=config["mapping"]["fastq_dir"],
     )
 
     if regex is None:
@@ -106,11 +124,6 @@ def get_multiqc_input(wildcards):
         sample=samples.index,
         tool=config["mapping"]["tool"],
     )
-    if config["processing"]["umi_extraction"]["enabled"]:
-        result += expand(
-            "results/umi_tools/extract/{sample}.log",
-            sample=samples.index,
-        )
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
         if config["mapping_postprocessing"]["deduplication"]["tool"] == "samtools":
             result += expand(

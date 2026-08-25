@@ -1,9 +1,21 @@
 samplesheet: "config/samples.tsv"
-get_genome:
-  database: "ncbi"
-  assembly: "GCF_000307535.1"
-  fasta: Null
+
+# Configs for obtaining genome sequence and annotation
+genome:
+  strep:
+    source: "ncbi" # local vs ncbi database
+    prefix: "strep"
+    local:
+      fasta: "data/strep.fasta"
+      gff: "data/strep.gff3"
+    datasets:
+      genbank: "CP003901.1"
+      assembly: ""
+      extra: ""
+
+# Configs for alignment tools
 mapping:
+  fastq_dir: "data"
   tool: "bwa_mem2"
   bowtie2:
     index: ""
@@ -21,20 +33,24 @@ mapping:
     extra: "-ax map-ont"
     sorting: "coordinate"
     sort_extra: ""
+
+# Configs for processing post-alignment
 mapping_postprocessing:
   samtools_sort:
     extra: "-m 4G"
   samtools_index:
     extra: ""
   deduplication:
-    enabled: false
-    tool: "umi_tools"
+    enabled: true
+    tool: "picard"
     umi_tools:
       extra: "" # or directional, cluster, adjacency, etc.
     samtools:
       extra: "-c -r --no-PG"
     picard:
       extra: ""
+
+# Configs for mapping statistics
 mapping_stats:
   gffread:
     extra: ""
@@ -45,6 +61,8 @@ mapping_stats:
   deeptools_coverage:
     genome_size: 1000
     extra: ""
+
+# Configs for multiqc
 qc:
   multiqc:
     extra: "--verbose --dirs"

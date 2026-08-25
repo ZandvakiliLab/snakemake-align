@@ -1,0 +1,21 @@
+name: efetch
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - _openmp_mutex=4.5=20_gnu
+  - bzip2=1.0.8=hda65f42_10
+  - ca-certificates=2026.7.22=hbd8a1cb_0
+  - entrez-direct=26.0=h1079eea_0
+  - libgcc=16.1.0=ha9f2e26_2
+  - libgcc-ng=16.1.0=h69a702a_2
+  - libgomp=16.1.0=he0feb66_2
+  - libidn2=2.3.8=hfac485b_1
+  - libunistring=0.9.10=h7f98852_0
+  - libzlib=1.3.2=h25fd6f3_3
+  - openssl=3.6.3=h35e630c_1
+  - pcre2=10.47=haa7fec5_0
+  - wget=1.25.0=h653f8fd_1
+  - zlib=1.3.2=h25fd6f3_3
+
+prefix: "/home/zandvaaa/miniforge3/envs/efetch"

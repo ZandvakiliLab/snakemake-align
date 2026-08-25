@@ -1,0 +1,12 @@
+name: ncbi_datasets
+channels:
+  - conda-forge
+dependencies:
+  - _openmp_mutex=4.5=20_gnu
+  - ca-certificates=2026.7.22=hbd8a1cb_0
+  - libgcc=16.1.0=ha9f2e26_1
+  - libgomp=16.1.0=he0feb66_1
+  - ncbi-datasets-cli=18.35.0=ha770c72_0
+  - unzip=6.0=hb03c661_4
+
+prefix: "/home/zandvaaa/miniforge3/envs/ncbi_datasets"

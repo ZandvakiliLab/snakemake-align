@@ -1,10 +1,12 @@
-# fastq-process-and-align
+# snakemake-align
 
-This is a fork of nicely designed [snakemake-simple-mapping](https://github.com/MPUSP/snakemake-simple-mapping) repository meant for fastq processing and alignment. This fork is intended to add the following features: 
-how
-1. UMI handling
-2. Fastq processing with trim-galore 
-3. Support for cram files
+This is a fork of nicely designed [snakemake-simple-mapping](https://github.com/MPUSP/snakemake-simple-mapping) repository. This fork is focused on genome alignment and adds the following features
+
+1. Download genomes using NCBI datasets based on genome assembly accession or Genbank id 
+2. Align to an arbitrary number of genomes
+3. Deduplication 
+4. Support for cram files
+5. Support scaling coverage files from spike-in genomes [TO DO]
 
 ## Authors
 

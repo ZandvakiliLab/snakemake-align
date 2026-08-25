@@ -1,29 +1,77 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
-description: configuration file for the analysis pipeline
+description: "configuration file for the analysis pipeline"
 properties:
   samplesheet:
     type: string
-    description: path to the sample sheet in tsv format
-  get_genome:
+    description: "path to the sample sheet in tsv format"
+  genome:
     type: object
-    properties:
-      database:
-        type: string
-        description: database to use for genome retrieval, 'ncbi' or 'manual'
-        default: ncbi
-      assembly:
-        type: string
-        description: RefSeq assembly accession to use for genome retrieval
-        default: GCF_000307535.1
-      fasta:
-        type: [string, "null"]
-        description: path to a custom FASTA file (optional)
-    required:
-      - database
-      - assembly
+    description: "Arbitrary named genome entries"
+    additionalProperties:
+      type: object
+      properties:
+        source:
+          type: string
+          enum: ["local", "ncbi"]
+          description: "Source of the genome: 'local' or 'ncbi'"
+        prefix:
+          type: [string, "null"]
+          description: "Prefix to be added to start of contig names, helpful for filtering contigs/chromosomes"
+        local:
+          type: object
+          description: "Path to local genome files"
+          properties:
+            fasta:
+              type: [string, "null"]
+              description: "Path to local genome fasta; required when source is 'local'"
+            gff:
+              type: [string, "null"]
+              description: "Path to local genome gff; required when source is 'local'"
+          required:
+            - fasta
+            - gff
+        datasets:
+          type: object
+          description: "NCBI assembly ID or genbank ID; required when source is 'ncbi'"
+          properties:
+            genbank:
+              type: [string, "null"]
+              description: "NCBI Genbank ID"
+            assembly:
+              type: [string, "null"]
+              description: "NCBI genome assembly accession"
+            extra:
+              type: [string, "null"]
+              description: "NCBI database to query (e.g. nuccore)"
+          anyOf:
+            - required: [genbank]
+            - required: [assembly]
+      required:
+        - source
+      # When source is "local": local_path must be a non-null
+      if:
+        properties:
+          source:
+            const: "local"
+      then:
+        required:
+          - local
+          - local
+      # When source is "ncbi": id and db must be non-null
+      if:
+        properties:
+          source:
+            const: "ncbi"
+      then:
+        required:
+          - datasets
+    minProperties: 1
   mapping:
     type: object
     properties:
+      fastq_dir:
+        type: [string, "null"]
+        description: location of preprocessed fastq files ready for mapping
       tool:
         type: string
         description: mapping tool to use, one of 'bowtie2', 'bwa_mem2', 'star', or 'minimap2'
@@ -156,6 +204,6 @@ properties:
       - deeptools_coverage
 required:
   - samplesheet
-  - get_genome
+  - genome
   - mapping
   - mapping_stats

@@ -1,11 +1,11 @@
 rule gffread_gff:
     input:
-        fasta=rules.get_genome.output.fasta,
-        annotation=rules.get_genome.output.gff,
+        fasta="results/genome/genome.fasta",
+        annotation="results/genome/genome.gff",
     output:
-        records="results/get_genome/genome.bed",
+        records="results/genome/genome.bed",
     log:
-        "results/get_genome/gffread.log",
+        "results/genome/gffread.log",
     threads: 1
     params:
         extra=config["mapping_stats"]["gffread"]["extra"],
@@ -18,7 +18,7 @@ rule gffread_gff:
 rule rseqc_infer_experiment:
     input:
         aln=get_processed_bam,
-        refgene="results/get_genome/genome.bed",
+        refgene="results/genome/genome.bed",
     output:
         "results/rseqc/infer_experiment/{sample}.txt",
     log:

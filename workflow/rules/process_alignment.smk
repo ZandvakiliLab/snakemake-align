@@ -103,7 +103,8 @@ rule samtools_markdup:
         "results/processed_alignment/dedup/samtools/{sample}.log",
     threads: 2
     params:
-        extra=config["mapping_postprocessing"]["deduplication"]["samtools"]["extra"] + " --json",
+        extra=config["mapping_postprocessing"]["deduplication"]["samtools"]["extra"]
+        + " --json",
     wrapper:
         "v9.15.0/bio/samtools/markdup"
 
@@ -163,7 +164,7 @@ rule samtools_index_dedup:
 rule bam_to_cram:
     input:
         bam=get_processed_bam,
-        fa=rules.get_genome.output.fasta,
+        fa="results/genome/genome.fasta",
     output:
         "results/processed_alignment/cram/{sample}.cram",
     log:
