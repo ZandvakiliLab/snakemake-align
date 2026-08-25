@@ -18,57 +18,9 @@ properties:
       fasta:
         type: [string, "null"]
         description: path to a custom FASTA file (optional)
-      gff:
-        type: [string, "null"]
-        description: path to a custom GFF file (optional)
-      gff_source_type:
-        type: array
-        description: mapping of GFF source types to feature types
     required:
       - database
       - assembly
-      - gff_source_type
-  processing:
-    type: object
-    properties:
-      tool:
-        type: string
-        description: processing tool to use, one of 'fastp' or 'fastplong'
-        default: fastp
-      fastp:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to fastp
-      fastplong:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to fastplong
-      umi_extraction:
-        type: object
-        properties:
-          enabled:
-            type: boolean
-            description: whether to enable UMI extraction
-            default: false
-          tool:
-            type: string
-            description: UMI extraction tool to use, one of 'umi_tools'
-            default: umi_tools
-          umi_tools:
-            type: object
-            properties:
-              extra:
-                type: string
-                description: additional arguments to pass to umi_tools extract
-        required:
-          - enabled
-    required:
-      - tool
-
   mapping:
     type: object
     properties:
@@ -113,13 +65,7 @@ properties:
             items:
               type: string
             description: additional arguments to STAR align
-            default:
-              [
-                "--outFilterMultimapNmax 10",
-                "--outSAMmultNmax 1",
-                "--outMultimapperOrder Random",
-                "--alignIntronMax 1",
-              ]
+            default: ["--outFilterMultimapNmax 10", "--outSAMmultNmax 1", "--outMultimapperOrder Random", "--alignIntronMax 1"]
       minimap2:
         type: object
         properties:
@@ -137,43 +83,41 @@ properties:
           sort_extra:
             type: string
             description: additional arguments to pass to the sorting tool
-
   mapping_postprocessing:
-      type: object
-      properties:
-        samtools_sort:
-          type: object
-          properties:
-            extra:
-              type: string
-              description: additional arguments to pass to Samtools sort
-              default: -m 4G
-        samtools_index:
-          type: object
-          properties:
-            extra:
-              type: string
-              description: additional arguments to pass to Samtools index
-        deduplication:
-          type: object
-          properties:
-            enabled:
-              type: boolean
-              description: whether to enable deduplication
-              default: false
-            tool:
-              type: string
-              description: deduplication tool to use, one of 'umi_tools', "samtools_markdup", or "picard_markduplicates"
-              default: umi_tools
-            umi_tools:
-              type: object
-              properties:
-                extra:
-                  type: string
-                  description: additional arguments to pass to umi_tools dedup
-          required:
-            - enabled
-
+    type: object
+    properties:
+      samtools_sort:
+        type: object
+        properties:
+          extra:
+            type: string
+            description: additional arguments to pass to Samtools sort
+            default: -m 4G
+      samtools_index:
+        type: object
+        properties:
+          extra:
+            type: string
+            description: additional arguments to pass to Samtools index
+      deduplication:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            description: whether to enable deduplication
+            default: false
+          tool:
+            type: string
+            description: deduplication tool to use, one of 'umi_tools', "samtools_markdup", or "picard_markduplicates"
+            default: umi_tools
+          umi_tools:
+            type: object
+            properties:
+              extra:
+                type: string
+                description: additional arguments to pass to umi_tools dedup
+        required:
+          - enabled
   mapping_stats:
     type: object
     properties:
@@ -210,130 +154,8 @@ properties:
       - rseqc_infer_experiment
       - rseqc_bam_stat
       - deeptools_coverage
-
-  variant_calling:
-    type: object
-    properties:
-      tool:
-        type: [string, array]
-        description: the variant caller to use, one of 'freebayes', 'bcftools', or both
-      bcftools_pileup:
-        type: object
-        properties:
-          uncompressed:
-            type: boolean
-            description: whether to output uncompressed BCF files
-            default: false
-          extra:
-            type: string
-            description: additional arguments to pass to BCFtools pileup
-      bcftools_call:
-        type: object
-        properties:
-          uncompressed:
-            type: boolean
-            description: whether to output uncompressed VCF files
-            default: false
-          caller:
-            type: string
-            description: use '-c' for consensus or '-m' for multiallelic
-            default: "-c"
-          extra:
-            type: string
-            description: additional arguments to pass to BCFtools call
-      bcftools_view:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to BCFtools view
-      bcftools_filter:
-        type: object
-        properties:
-          filter:
-            type: string
-            description: expression used to filter BCF/VCF records
-            default: '-e ''ALT="."'''
-          extra:
-            type: string
-            description: additional arguments to pass to BCFtools filter
-      freebayes:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to Freebayes call
-    required:
-      - bcftools_pileup
-      - bcftools_call
-      - bcftools_view
-      - bcftools_filter
-      - freebayes
-  variant_annotation:
-    type: object
-    properties:
-      tool:
-        type: string
-        description: annotation tool to use, one of 'vep', 'snpeff'
-        default: vep
-      vep:
-        type: object
-        properties:
-          convert_gff:
-            type: boolean
-            description: whether to convert NCBI GFF to Ensembl-style GFF for VEP compatibility
-            default: true
-          plugins:
-            type: array
-            description: list of VEP plugins to use
-            default: []
-            items:
-              type: string
-          extra:
-            type: string
-            description: additional arguments to pass to VEP
-      snpeff:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to SnpEff
-    required:
-      - tool
-      - vep
-      - snpeff
-
-  qc:
-    type: object
-    properties:
-      multiqc:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to MultiQC
-      fastqc:
-        type: object
-        properties:
-          extra:
-            type: string
-            description: additional arguments to pass to FastQC
-    required:
-      - multiqc
-      - fastqc
-  report:
-    type: object
-    properties:
-      minimum_variant_count:
-        type: integer
-        description: minimum number of samples/appearances for the same variant to be included in the final report
 required:
   - samplesheet
   - get_genome
-  - processing
   - mapping
   - mapping_stats
-  - variant_calling
-  - variant_annotation
-  - qc
-  - report

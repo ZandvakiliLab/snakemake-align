@@ -13,7 +13,6 @@ properties:
   read2:
     type: string
     description: path to fastq.gz files, read 2 (optional)
-
 required:
   - sample
   - read1

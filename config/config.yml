@@ -1,31 +1,8 @@
 samplesheet: "config/samples.tsv"
-
 get_genome:
   database: "ncbi"
   assembly: "GCF_000307535.1"
   fasta: Null
-  gff: Null
-  gff_source_type:
-    [
-      "RefSeq": "gene",
-      "RefSeq": "pseudogene",
-      "RefSeq": "CDS",
-      "Protein Homology": "CDS",
-    ]
-
-processing:
-  tool: "fastp"
-  fastp:
-    extra: ""
-  fastplong:
-    extra: ""
-  umi_extraction:
-    enabled: false  # Set to true to enable UMI extraction
-    tool: "umi_tools"
-    umi_tools:
-      extra: ""
-
-
 mapping:
   tool: "bwa_mem2"
   bowtie2:
@@ -38,19 +15,12 @@ mapping:
     sort_extra: ""
   star:
     index: ""
-    extra:
-      [
-        "--outFilterMultimapNmax 10",
-        "--outSAMmultNmax 1",
-        "--outMultimapperOrder Random",
-        "--alignIntronMax 1",
-      ]
+    extra: ["--outFilterMultimapNmax 10", "--outSAMmultNmax 1", "--outMultimapperOrder Random", "--alignIntronMax 1"]
   minimap2:
     index: ""
     extra: "-ax map-ont"
     sorting: "coordinate"
     sort_extra: ""
-
 mapping_postprocessing:
   samtools_sort:
     extra: "-m 4G"
@@ -60,12 +30,11 @@ mapping_postprocessing:
     enabled: false
     tool: "umi_tools"
     umi_tools:
-      extra: ""  # or directional, cluster, adjacency, etc.
+      extra: "" # or directional, cluster, adjacency, etc.
     samtools:
       extra: "-c -r --no-PG"
     picard:
       extra: ""
-
 mapping_stats:
   gffread:
     extra: ""
@@ -76,38 +45,6 @@ mapping_stats:
   deeptools_coverage:
     genome_size: 1000
     extra: ""
-
-variant_calling:
-  tool: "freebayes"
-  bcftools_pileup:
-    uncompressed: false
-    extra: "--max-depth 1000 --min-BQ 20"
-  bcftools_call:
-    uncompressed: false
-    caller: "-c"
-    extra: ""
-  bcftools_view:
-    extra: ""
-  bcftools_filter:
-    filter: '-e ''ALT="."'''
-    extra: ""
-  freebayes:
-    extra: "--ploidy 1 --min-base-quality 20 --min-alternate-fraction 0.75"
-
-variant_annotation:
-  tool: "vep"
-  vep:
-    convert_gff: true
-    plugins: []
-    extra: "--everything --species custom_bacteria --distance 0"
-  snpeff:
-    extra: "-nodownload -ud 0"
-
 qc:
   multiqc:
     extra: "--verbose --dirs"
-  fastqc:
-    extra: "--quiet"
-
-report:
-  minimum_variant_count: 2
