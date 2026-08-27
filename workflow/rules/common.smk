@@ -33,6 +33,7 @@ def get_genome_files(wildcards):
             files.append(f"results/genome/{genome}.{wildcards.filetype}")
     return files
 
+
 ###############################
 # FASTQ-RELATED FUNCTIONS
 ###############################
@@ -53,10 +54,16 @@ def is_paired_end():
 
 # get processed fastq files (after fastp or umi_tools)
 def get_processed_fastq(wildcards, regex=None):
+    if "trimming" in config and "tool" in config["trimming"]:
+        tool = config["trimming"]["tool"]
+        fastq_dir = f"results/{tool}"
+    else:
+        fastq_dir = config["mapping"]["fastq_dir"]
+
     processed_fastq = expand(
         "{dir}/{{sample}}_{read}.fastq.gz",
         read=["read1", "read2"] if is_paired_end() else ["read1"],
-        dir=config["mapping"]["fastq_dir"],
+        dir=fastq_dir,
     )
 
     if regex is None:
