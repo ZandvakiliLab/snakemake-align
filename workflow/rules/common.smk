@@ -149,7 +149,8 @@ def get_multiqc_input(wildcards):
         tool=["infer_experiment", "bam_stat"],
     )
     result += expand(
-        "results/deeptools/coverage/{sample}.bw",
+        "results/deeptools/coverage/{sample}.{strand}.bw",
         sample=samples.index,
+        strand=["plus", "minus"],
     )
     return result

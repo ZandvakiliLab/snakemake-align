@@ -52,16 +52,24 @@ rule deeptools_coverage:
         bam=get_processed_bam,
         bai=get_processed_bam_index,
     output:
-        "results/deeptools/coverage/{sample}.bw",
+        "results/deeptools/coverage/{sample}.{strand}.bw",
     log:
-        "results/deeptools/coverage/{sample}.log",
+        "results/deeptools/coverage/{sample}.{strand}.log",
+    wildcard_constraints:
+        strand="plus|minus",
+        sample="|".join(samples.index),
     threads: 4
     params:
         effective_genome_size=config["mapping_stats"]["deeptools_coverage"][
             "genome_size"
         ],
-        extra=config["mapping_stats"]["deeptools_coverage"]["extra"],
+        extra=lambda wc: (
+            config["mapping_stats"]["deeptools_coverage"]["extra"]
+            + " --filterRNAstrand {strand}".format(
+                strand="forward" if wc.strand == "plus" else "reverse"
+            )
+        ),
     message:
-        "generate normalized coverage files using deeptools"
+        "generate normalized {wildcards.strand}-strand coverage using deeptools for sample {wildcards.sample}"
     wrapper:
         "v5.6.0/bio/deeptools/bamcoverage"
