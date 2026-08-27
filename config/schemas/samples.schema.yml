@@ -7,6 +7,9 @@ properties:
   description:
     type: string
     description: metadata or other information about sample
+  accession:
+    type: string
+    description: SRA accession
   read1:
     type: string
     description: path to fastq.gz files, read 1
@@ -15,4 +18,6 @@ properties:
     description: path to fastq.gz files, read 2 (optional)
 required:
   - sample
-  - read1
+anyOf:
+  - required: [read1]
+  - required: [accession]
