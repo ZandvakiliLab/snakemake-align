@@ -1,4 +1,4 @@
-name: Snakemake CI
+name: Linting and Testing
 
 on:
   push:
@@ -25,11 +25,3 @@ jobs:
           args: "--cores 1 --sdm conda --conda-cleanup-pkgs cache"
           stagein: "" # additional preliminary commands to run (can be multiline)
           show-disk-usage-on-error: true
-
-      - name: Create container file
-        uses: snakemake/snakemake-github-action@v2
-        with:
-          directory: ".test"
-          snakefile: "workflow/Snakefile"
-          task: "containerize"
-          containerize-args: "apptainer"
