@@ -18,8 +18,7 @@ include: "rules/qc.smk"
 
 # container definition (optional)
 # -----------------------------------------------------
-containerized: "oras://ghcr.io/mpusp/snakemake-simple-mapping:latest"
-
+containerized: "oras://ghcr.io/zandvakililab/snakemake-align:latest"
 
 # optional messages, log and error handling
 # -----------------------------------------------------
