@@ -45,11 +45,15 @@ rule ncbi_datasets:
         "../envs/ncbi_datasets.yml"
     params:
         accession=lambda wc: REFS[wc.ref]["datasets"]["assembly"],
-        extra=lambda wc: REFS[wc.ref]["datasets"]["extra"],
+        extra=lambda wc: REFS[wc.ref]["datasets"]["extra"] or "",
     message:
         "download genome genome from NCBI"
     shell:
         """
+        # Use a local scratch directory
+        WORKDIR=$(mktemp -d)
+        trap "rm -rf $WORKDIR" EXIT
+
         # Determine genome assembly accession
         if [[ -n "{params.accession}" ]]; then
             ACCESSION="{params.accession}"
@@ -57,24 +61,21 @@ rule ncbi_datasets:
             ACCESSION=$(tail -1 {input})
         fi
 
+        echo "Using accession: $ACCESSION" > {log}
+
         # Download genome
-        datasets download genome accession $ACCESSION --include genome,gff3 {params.extra} \
-            --filename results/ncbi/{wildcards.ref}.zip >{log} 2>&1
+        datasets download genome accession "$ACCESSION" \
+            --include genome,gff3 {params.extra} \
+            --filename "$WORKDIR/genome.zip" >> {log} 2>&1
 
         # Unzip
-        unzip -o results/ncbi/{wildcards.ref}.zip \
-            -d results/ncbi/{wildcards.ref} >>{log} 2>&1
+        unzip -o "$WORKDIR/genome.zip" -d "$WORKDIR/genome" >> {log} 2>&1
 
         # Collect FASTA
-        find results/ncbi/{wildcards.ref} -name "*.fna" \
-            | xargs cat >{output.fasta}
+        find "$WORKDIR/genome" -name "*.fna" | sort | xargs cat > {output.fasta}
 
         # Collect GFF3
-        find results/ncbi/{wildcards.ref} -name "*.gff" \
-            | xargs cat >{output.gff}
-
-        # Cleanup intermediates
-        rm -rf results/ncbi/{wildcards.ref}.zip results/ncbi/{wildcards.ref}/
+        find "$WORKDIR/genome" -name "*.gff" | sort | xargs cat > {output.gff}
         """
 
 
