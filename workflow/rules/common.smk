@@ -131,17 +131,31 @@ def get_multiqc_input(wildcards):
         sample=samples.index,
         tool=config["mapping"]["tool"],
     )
+    if config["mapping"]["tool"] == "star":
+        result += expand(
+            "results/star/align/{sample}/Log.final.out",
+            sample=samples.index,
+        )
+    elif config["mapping"]["tool"] == "bowtie2":
+        result += expand(
+            "results/bowtie2/align/{sample}/mapped.log",
+            sample=samples.index,
+        )
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
         if config["mapping_postprocessing"]["deduplication"]["tool"] == "samtools":
             result += expand(
                 "results/processed_alignment/dedup/samtools/{sample}_markdup.json",
                 sample=samples.index,
             )
-        else:
+        elif config["mapping_postprocessing"]["deduplication"]["tool"] == "picard":
             result += expand(
-                "results/processed_alignment/dedup/{tool}/{sample}.log",
+                "results/processed_alignment/dedup/picard/{sample}.metrics.txt",
                 sample=samples.index,
-                tool=config["mapping_postprocessing"]["deduplication"]["tool"],
+            )
+        elif config["mapping_postprocessing"]["deduplication"]["tool"] == "umi_tools":
+            result += expand(
+                "results/processed_alignment/dedup/umi_tools/{sample}.log",
+                sample=samples.index,
             )
     result += expand(
         "results/rseqc/{tool}/{sample}.txt",
