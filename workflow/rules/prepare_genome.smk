@@ -61,21 +61,21 @@ rule ncbi_datasets:
             ACCESSION=$(tail -1 {input})
         fi
 
-        echo "Using accession: $ACCESSION" > {log}
+        echo "Using accession: $ACCESSION" >{log}
 
         # Download genome
         datasets download genome accession "$ACCESSION" \
             --include genome,gff3 {params.extra} \
-            --filename "$WORKDIR/genome.zip" >> {log} 2>&1
+            --filename "$WORKDIR/genome.zip" >>{log} 2>&1
 
         # Unzip
-        unzip -o "$WORKDIR/genome.zip" -d "$WORKDIR/genome" >> {log} 2>&1
+        unzip -o "$WORKDIR/genome.zip" -d "$WORKDIR/genome" >>{log} 2>&1
 
         # Collect FASTA
-        find "$WORKDIR/genome" -name "*.fna" | sort | xargs cat > {output.fasta}
+        find "$WORKDIR/genome" -name "*.fna" | sort | xargs cat >{output.fasta}
 
         # Collect GFF3
-        find "$WORKDIR/genome" -name "*.gff" | sort | xargs cat > {output.gff}
+        find "$WORKDIR/genome" -name "*.gff" | sort | xargs cat >{output.gff}
         """
 
 

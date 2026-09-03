@@ -20,6 +20,7 @@ include: "rules/qc.smk"
 # -----------------------------------------------------
 containerized: "oras://ghcr.io/zandvakililab/snakemake-align:latest"
 
+
 # optional messages, log and error handling
 # -----------------------------------------------------
 onstart:
