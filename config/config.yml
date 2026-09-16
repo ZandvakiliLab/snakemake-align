@@ -13,6 +13,10 @@ genome:
       assembly: ""
       extra: ""
 
+# Configs for fastq files
+get_fastq:
+  PE: True
+  
 # Configs for alignment tools
 mapping:
   fastq_dir: "data"

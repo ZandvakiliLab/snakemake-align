@@ -41,15 +41,12 @@ def get_genome_files(wildcards):
 
 # determine input type
 def is_paired_end():
-    if samples["read2"].isna().all():
-        return False
-    elif samples["read2"].notna().all():
+    if config["get_fastq"]["PE"]:
         return True
+    elif config["get_fastq"]["PE"] == False:
+        return False
     else:
-        raise ValueError(
-            f"Some samples seem to have a read2 fastq file, while others have only a "
-            + "read1 fastq file. \nYou may not mix single-end and paired-end samples."
-        )
+        return "config['get_fastq']['PE'] must be either True or False"
 
 
 # get processed fastq files (after fastp or umi_tools)
