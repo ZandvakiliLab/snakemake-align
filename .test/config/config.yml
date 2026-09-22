@@ -63,7 +63,11 @@ mapping_postprocessing:
       extra: "-c -r --no-PG"
     picard:
       extra: ""
-
+  filter:
+    all: ""
+    cmv: "-e 'rname == \"KF297339.1\"'"
+    human: "-e 'rname != \"KF297339.1\"'"
+    
 # Configs for mapping statistics
 mapping_stats:
   gffread:

@@ -140,13 +140,35 @@ rule markduplicates_bam:
         "v9.15.0/bio/picard/markduplicates"
 
 
-rule samtools_index_dedup:
+########################
+# FILTER RULES
+########################
+
+
+rule filter_bam:
     input:
         get_processed_bam,
     output:
-        temp("results/processed_alignment/dedup/{tool}/{sample}.bam.bai"),
+        bam="results/processed_alignment/filtered_bam/{subset}/{sample}.bam",
     log:
-        "results/processed_alignment/dedup/{tool}/{sample}_index.log",
+        "results/processed_alignment/filtered_bam/{subset}/{sample}.log",
+    threads: 2
+    params:
+        extra=lambda wc: config.get("mapping_postprocessing", {})
+        .get("filter", {})
+        .get(wc.subset, ""),
+        region="",  # optional region string 
+    wrapper:
+        "v9.15.0/bio/samtools/view"
+
+
+rule samtools_index_processed:
+    input:
+        rules.filter_bam.output,
+    output:
+        temp("results/processed_alignment/filtered_bam/{subset}/{sample}.bam.bai"),
+    log:
+        "results/processed_alignment/filtered_bam/{subset}/{sample}_index.log",
     threads: 2
     params:
         extra=config["mapping_postprocessing"]["samtools_index"]["extra"],
@@ -163,12 +185,12 @@ rule samtools_index_dedup:
 
 rule bam_to_cram:
     input:
-        bam=get_processed_bam,
+        bam=rules.filter_bam.output,
         fa="results/genome/genome.fasta",
     output:
-        "results/processed_alignment/cram/{sample}.cram",
+        "results/processed_alignment/cram/{subset}/{sample}.cram",
     log:
-        "results/processed_alignment/cram/{sample}.cram.log",
+        "results/processed_alignment/cram/{subset}/{sample}.cram.log",
     threads: 2
     params:
         extra=lambda wildcards, input: f"-C -T {input.fa}",  # optional params string
@@ -181,9 +203,9 @@ rule index_cram:
     input:
         rules.bam_to_cram.output,
     output:
-        "results/processed_alignment/cram/{sample}.cram.crai",
+        "results/processed_alignment/cram/{subset}/{sample}.cram.crai",
     log:
-        "results/processed_alignment/cram/{sample}_index.log",
+        "results/processed_alignment/cram/{subset}/{sample}_index.log",
     threads: 4  # This value - 1 will be sent to -@
     params:
         extra="",  # optional params string

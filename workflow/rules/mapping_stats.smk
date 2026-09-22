@@ -17,12 +17,12 @@ rule gffread_gff:
 
 rule rseqc_infer_experiment:
     input:
-        aln=get_processed_bam,
+        aln=rules.filter_bam.output,
         refgene="results/genome/genome.bed",
     output:
-        "results/rseqc/infer_experiment/{sample}.txt",
+        "results/rseqc/infer_experiment/{sample}_{subset}.txt",
     log:
-        "results/rseqc/infer_experiment/{sample}.log",
+        "results/rseqc/infer_experiment/{sample}_{subset}.log",
     params:
         extra="--sample-size 10000",
     message:
@@ -33,11 +33,11 @@ rule rseqc_infer_experiment:
 
 rule rseqc_bam_stat:
     input:
-        get_processed_bam,
+        rules.filter_bam.output,
     output:
-        "results/rseqc/bam_stat/{sample}.txt",
+        "results/rseqc/bam_stat/{sample}_{subset}.txt",
     log:
-        "results/rseqc/bam_stat/{sample}.log",
+        "results/rseqc/bam_stat/{sample}_{subset}.log",
     threads: 2
     params:
         extra="--mapq 5",
@@ -49,12 +49,12 @@ rule rseqc_bam_stat:
 
 rule deeptools_coverage:
     input:
-        bam=get_processed_bam,
-        bai=get_processed_bam_index,
+        bam=rules.filter_bam.output,
+        bai=rules.samtools_index_processed.output,
     output:
-        "results/deeptools/coverage/{sample}.{strand}.bw",
+        "results/deeptools/coverage/{sample}.{subset}.{strand}.bw",
     log:
-        "results/deeptools/coverage/{sample}.{strand}.log",
+        "results/deeptools/coverage/{sample}.{subset}.{strand}.log",
     wildcard_constraints:
         strand="plus|minus",
         sample="|".join(samples.index),

@@ -95,8 +95,7 @@ def get_bam_2(wildcards):
 
 def get_processed_bam(wildcards):
     if config["mapping_postprocessing"]["deduplication"]["enabled"]:
-        return expand(
-            "results/processed_alignment/dedup/{tool}/{sample}.bam",
+        return "results/processed_alignment/dedup/{tool}/{sample}.bam".format(
             sample=wildcards.sample,
             tool=config["mapping_postprocessing"]["deduplication"]["tool"],
         )
@@ -155,13 +154,15 @@ def get_multiqc_input(wildcards):
                 sample=samples.index,
             )
     result += expand(
-        "results/rseqc/{tool}/{sample}.txt",
+        "results/rseqc/{tool}/{sample}_{subset}.txt",
         sample=samples.index,
         tool=["infer_experiment", "bam_stat"],
+        subset=list(config.get("mapping_postprocessing", {}).get("filter", {}).keys()),
     )
     result += expand(
-        "results/deeptools/coverage/{sample}.{strand}.bw",
+        "results/deeptools/coverage/{sample}.{subset}.{strand}.bw",
         sample=samples.index,
+        subset=list(config.get("mapping_postprocessing", {}).get("filter", {}).keys()),
         strand=["plus", "minus"],
     )
     return result

@@ -53,7 +53,9 @@ mapping_postprocessing:
       extra: "-c -r --no-PG"
     picard:
       extra: ""
-
+  filter:
+    all: ""
+    
 # Configs for mapping statistics
 mapping_stats:
   gffread:

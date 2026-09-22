@@ -42,5 +42,9 @@ rule all:
     input:
         "results/multiqc/multiqc_report.html",
         expand(
-            "results/processed_alignment/cram/{sample}.cram.crai", sample=samples.index
+            "results/processed_alignment/cram/{subset}/{sample}.cram.crai",
+            sample=samples.index,
+            subset=list(
+                config.get("mapping_postprocessing", {}).get("filter", {}).keys()
+            ),
         ),
