@@ -188,9 +188,9 @@ rule bam_to_cram:
         bam=rules.filter_bam.output,
         fa="results/genome/genome.fasta",
     output:
-        "results/processed_alignment/cram/{subset}/{sample}.cram",
+        "results/processed_alignment/cram/{sample}_{subset}.cram",
     log:
-        "results/processed_alignment/cram/{subset}/{sample}.cram.log",
+        "results/processed_alignment/cram/{sample}_{subset}.cram.log",
     threads: 2
     params:
         extra=lambda wildcards, input: f"-C -T {input.fa}",  # optional params string
@@ -203,9 +203,9 @@ rule index_cram:
     input:
         rules.bam_to_cram.output,
     output:
-        "results/processed_alignment/cram/{subset}/{sample}.cram.crai",
+        "results/processed_alignment/cram/{sample}_{subset}.cram.crai",
     log:
-        "results/processed_alignment/cram/{subset}/{sample}_index.log",
+        "results/processed_alignment/cram/{sample}_{subset}_index.log",
     threads: 4  # This value - 1 will be sent to -@
     params:
         extra="",  # optional params string

@@ -191,9 +191,11 @@ properties:
         type: object
         properties:
           genome_size:
-            type: integer
-            description: genome size in base pairs
-            default: 1000
+            type: object
+            additionalProperties:
+              type: integer
+              description: genome size in base pairs
+              default: 1000
           extra:
             type: string
             description: additional arguments to pass to DeepTools bamCoverage

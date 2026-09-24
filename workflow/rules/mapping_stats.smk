@@ -60,9 +60,9 @@ rule deeptools_coverage:
         sample="|".join(samples.index),
     threads: 4
     params:
-        effective_genome_size=config["mapping_stats"]["deeptools_coverage"][
+        effective_genome_size=lambda wc: config["mapping_stats"]["deeptools_coverage"][
             "genome_size"
-        ],
+        ][wc.subset],
         extra=lambda wc: (
             config["mapping_stats"]["deeptools_coverage"]["extra"]
             + " --filterRNAstrand {strand}".format(

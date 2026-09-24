@@ -14,6 +14,7 @@ include: "rules/minimap2.smk"
 include: "rules/process_alignment.smk"
 include: "rules/mapping_stats.smk"
 include: "rules/qc.smk"
+include: "rules/jbrowse.smk"
 
 
 # container definition (optional)
@@ -37,14 +38,17 @@ onerror:
 
 # target rules
 # -----------------------------------------------------
+
+
 rule all:
     default_target: True
     input:
         "results/multiqc/multiqc_report.html",
         expand(
-            "results/processed_alignment/cram/{subset}/{sample}.cram.crai",
+            "results/processed_alignment/cram/{sample}_{subset}.cram.crai",
             sample=samples.index,
             subset=list(
                 config.get("mapping_postprocessing", {}).get("filter", {}).keys()
             ),
         ),
+        "jbrowse/config.json",

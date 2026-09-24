@@ -64,7 +64,6 @@ mapping_postprocessing:
     picard:
       extra: ""
   filter:
-    all: ""
     cmv: "-e 'rname == \"KF297339.1\"'"
     human: "-e 'rname != \"KF297339.1\"'"
     
@@ -77,10 +76,29 @@ mapping_stats:
   rseqc_bam_stat:
     extra: ""
   deeptools_coverage:
-    genome_size: 1000
+    genome_size:
+      cmv: 236000
+      human: 3130250755
     extra: ""
 
 # Configs for multiqc
 qc:
   multiqc:
     extra: "--verbose --dirs"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. JBrowse Configs
+# ─────────────────────────────────────────────────────────────────────────────
+
+jbrowse:
+  path_prefix: "" #No trailing slash
+  add_assembly:
+    cmv: "--alias 'cmv_tb40' --displayName 'CMV_TB40' --load symlink --force"
+    human: "--alias 'human' --displayName 'Human' --load symlink --force"
+  add_anno:
+    cmv: "--name CMV_TB40_Annotation --load symlink --force"
+    human: "--name Human_Annotation --load symlink --force"
+  add_bw:
+    extra: "--load symlink --force"
+  add_cram:
+    extra: "--load symlink --force"

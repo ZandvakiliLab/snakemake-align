@@ -65,10 +65,26 @@ mapping_stats:
   rseqc_bam_stat:
     extra: ""
   deeptools_coverage:
-    genome_size: 1000
+    genome_size:
+      human: 3130250755
     extra: ""
 
 # Configs for multiqc
 qc:
   multiqc:
     extra: "--verbose --dirs"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. JBrowse Configs
+# ─────────────────────────────────────────────────────────────────────────────
+
+jbrowse:
+  path_prefix: "" #No trailing slash
+  add_assembly:
+    org1: ""
+  add_anno:
+    org1: ""
+  add_bw:
+    extra: ""
+  add_cram:
+    extra: ""
