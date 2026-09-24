@@ -166,6 +166,14 @@ properties:
                 description: additional arguments to pass to umi_tools dedup
         required:
           - enabled
+      filter:
+        type: object
+        description: list of genomes included in workflow
+        additionalProperties:
+          type: string
+          description: arguments to pass to samtools view to subset bam files by genome 
+      required:
+        - filter
   mapping_stats:
     type: object
     properties:
@@ -192,9 +200,10 @@ properties:
         properties:
           genome_size:
             type: object
+            description: effective genome size to pass to deeptools bamCoverage for each genomes included in workflow
             additionalProperties:
               type: integer
-              description: genome size in base pairs
+              description: effective genome size in base pairs
               default: 1000
           extra:
             type: string
@@ -204,6 +213,33 @@ properties:
       - rseqc_infer_experiment
       - rseqc_bam_stat
       - deeptools_coverage
+  jbrowse:
+    type: object
+    properties:
+      add_assembly:
+        type: object
+        description: arguments to pass to jbrowse add-assembly for each genome included in workflow
+        additionalProperties:
+          type: string
+          description: arguments to pass to jbrowse add-assembly per genome
+      add_anno:
+        type: object
+        description: arguments to pass to jbrowse add-tracj for each genome annotation included in workflow
+        additionalProperties:
+          type: string
+          description: arguments to pass to jbrowse add-track per genome
+      add_bw:
+        type: object
+        properties:
+          extra:
+            type: string
+            descrption: extra arguments to pass to jbrowse add-track when adding bigwig files to jbrowse
+      add_cram:
+        type: object
+        properties:
+          extra:
+            type: string
+            descrption: extra arguments to pass to jbrowse add-track when adding cram files to jbrowse
 required:
   - samplesheet
   - genome

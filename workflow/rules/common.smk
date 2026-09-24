@@ -15,6 +15,28 @@ samples = (
 validate(samples, schema="../../config/schemas/samples.schema.yml")
 validate(config, schema="../../config/schemas/config.schema.yml")
 
+
+def validate_config(cfg):
+    genome_keys = set(cfg["genome"].keys())
+    filter_keys = set(cfg["mapping_postprocessing"]["filter"].keys())
+    genome_size_keys = set(cfg["mapping_stats"]["deeptools_coverage"]["genome_size"].keys())
+    add_assembly_keys = set(cfg["jbrowse"]["add_assembly"].keys())
+    add_anno_keys = set(cfg["jbrowse"]["add_anno"].keys())
+
+    if not (
+        genome_keys
+        == filter_keys
+        == genome_size_keys
+        == add_assembly_keys
+        == add_anno_keys
+    ):
+        raise ValueError(
+            "all genome related keys in config.yml must have the same keys!"
+        )
+
+
+validate_config(config)
+
 ###############################
 # GENOME-RELATED FUNCTIONS
 ###############################
