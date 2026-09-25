@@ -209,5 +209,5 @@ def strip_prefix(path):
     p = str(path)
     for prefix in (_default_prefix, _local_prefix):
         if prefix and prefix in p:
-            p = p.split(prefix, 1)[-1].lstrip("/")
+            p = p.split(prefix, 1)[-1]
     return p
