@@ -10,6 +10,9 @@ samples = (
     .sort_index()
 )
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Validate Config
+# ─────────────────────────────────────────────────────────────────────────────
 
 # validate sample sheet and config file
 validate(samples, schema="../../config/schemas/samples.schema.yml")
@@ -19,7 +22,9 @@ validate(config, schema="../../config/schemas/config.schema.yml")
 def validate_config(cfg):
     genome_keys = set(cfg["genome"].keys())
     filter_keys = set(cfg["mapping_postprocessing"]["filter"].keys())
-    genome_size_keys = set(cfg["mapping_stats"]["deeptools_coverage"]["genome_size"].keys())
+    genome_size_keys = set(
+        cfg["mapping_stats"]["deeptools_coverage"]["genome_size"].keys()
+    )
     add_assembly_keys = set(cfg["jbrowse"]["add_assembly"].keys())
     add_anno_keys = set(cfg["jbrowse"]["add_anno"].keys())
 
@@ -37,9 +42,9 @@ def validate_config(cfg):
 
 validate_config(config)
 
-###############################
-# GENOME-RELATED FUNCTIONS
-###############################
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers for processing genomes
+# ─────────────────────────────────────────────────────────────────────────────
 
 REFS = config["genome"]  # dict of all reference blocks
 REF_KEYS = list(REFS.keys())  # e.g. ["host", "virus", "spike"]
@@ -56,9 +61,9 @@ def get_genome_files(wildcards):
     return files
 
 
-###############################
-# FASTQ-RELATED FUNCTIONS
-###############################
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers for FASTQ processing
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 # determine input type
@@ -91,9 +96,9 @@ def get_processed_fastq(wildcards, regex=None):
         return [s for s in processed_fastq if re.search(regex, s)]
 
 
-###############################
-# ALIGNMENT-RELATED FUNCTIONS
-###############################
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers for SAM/BAM/CRAM processing
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 # get bam files
@@ -136,9 +141,9 @@ def get_processed_bam_index(wildcards):
         return rules.samtools_index.output
 
 
-####################
-# MULTIQC FUNCTION
-####################
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers for MultiQC
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 # get input for multiqc
