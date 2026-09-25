@@ -1,20 +1,3 @@
-
-
-rule jbrowse_create:
-    output:
-        "jbrowse/index.html",
-    log:
-        "results/jbrowse/create.log",
-    conda:
-        "../envs/jbrowse.yml"
-    message:
-        "create jbrowse folder"
-    shell:
-        """
-        jbrowse create jbrowse --force
-        """
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # 1. Add Assembly
 # ─────────────────────────────────────────────────────────────────────────────
@@ -43,6 +26,7 @@ rule jbrowse_add_assembly:
     resources:
         file_lock=1,
     params:
+        clean_path=lambda wc, input: strip_prefix(input.fa),
         url_prefix=config["jbrowse"]["path_prefix"],
         extra=lambda wc: config["jbrowse"]["add_assembly"][wc.genome],
     message:
@@ -50,7 +34,8 @@ rule jbrowse_add_assembly:
     shell:
         """
         (
-            path_to_asm="{params.url_prefix}{input.fa}"
+            # Add to jbrowse
+            path_to_asm="{params.url_prefix}{params.clean_path}"
             jbrowse add-assembly "$path_to_asm" \
                 --type twoBit \
                 --target {output.config} \
@@ -112,6 +97,8 @@ rule jbrowse_add_anno:
     resources:
         file_lock=1,
     params:
+        clean_path_gff=lambda wc, input: strip_prefix(input.gff),
+        clean_path_tbi=lambda wc, input: strip_prefix(input.tbi),
         url_prefix=config["jbrowse"]["path_prefix"],
         extra=lambda wc: config["jbrowse"]["add_anno"][wc.genome],
     message:
@@ -119,11 +106,15 @@ rule jbrowse_add_anno:
     shell:
         """
         (
+
+            # Get url/path to annotation files
+            path_to_gff="{params.url_prefix}{params.clean_path_gff}"
+            path_to_tbi="{params.url_prefix}{params.clean_path_tbi}"
+
+            # add to jbrowse
             cp {input.config} {output.config}
-            path_to_anno="{params.url_prefix}{input.gff}"
-            path_to_index="{params.url_prefix}{input.tbi}"
-            jbrowse add-track "$path_to_anno" \
-                --indexFile "$path_to_index" \
+            jbrowse add-track "$path_to_gff" \
+                --indexFile "$path_to_tbi" \
                 --target {output.config} \
                 --assemblyNames {wildcards.genome} \
                 {params.extra}
@@ -131,9 +122,9 @@ rule jbrowse_add_anno:
         """
 
 
-# # ─────────────────────────────────────────────────────────────────────────────
-# # 3. Add BigWigs
-# # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. Add BigWigs
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 rule jbrowse_add_bw:
@@ -156,6 +147,8 @@ rule jbrowse_add_bw:
     resources:
         file_lock=1,
     params:
+        clean_path_plus=lambda wc, input: strip_prefix(input.plus_bw),
+        clean_path_minus=lambda wc, input: strip_prefix(input.minus_bw),
         url_prefix=config["jbrowse"]["path_prefix"],
         extra=config["jbrowse"]["add_bw"]["extra"],
     message:
@@ -165,8 +158,12 @@ rule jbrowse_add_bw:
         (
             cp {input.config} {output.config}
 
-            for i in {input.plus_bw}; do
+            for i in {params.clean_path_plus}; do
+
+                # Get url/path to annotation files
                 path_to_bw="{params.url_prefix}$i"
+
+                # Add to jbrowse
                 jbrowse add-track $path_to_bw \
                     --target {output.config} \
                     --name "${{i##*/}}" \
@@ -174,8 +171,12 @@ rule jbrowse_add_bw:
                     {params.extra}
             done
 
-            for i in {input.minus_bw}; do
+            for i in {params.clean_path_minus}; do
+
+                # Get url/path to annotation files
                 path_to_bw="{params.url_prefix}$i"
+
+                # Add to jbrowse
                 jbrowse add-track $path_to_bw \
                     --target {output.config} \
                     --name "${{i##*/}}" \
@@ -188,9 +189,9 @@ rule jbrowse_add_bw:
         """
 
 
-# # # ─────────────────────────────────────────────────────────────────────────────
-# # # 3. Add cram files
-# # # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. Add cram files
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 rule jbrowse_add_cram:
@@ -209,6 +210,7 @@ rule jbrowse_add_cram:
     resources:
         file_lock=1,
     params:
+        clean_path=lambda wc, input: strip_prefix(input.cram),
         url_prefix=config["jbrowse"]["path_prefix"],
         extra=config["jbrowse"]["add_cram"]["extra"],
     message:
@@ -218,7 +220,11 @@ rule jbrowse_add_cram:
         (
             cp {input.config} {output.config}
             for i in {input.cram}; do
+
+                # Get url/path to annotation files
                 path_to_cram="{params.url_prefix}$i"
+
+                # Add to jbrowse
                 jbrowse add-track $path_to_cram \
                     --indexFile $i.crai \
                     --target {output.config} \
@@ -231,9 +237,9 @@ rule jbrowse_add_cram:
         """
 
 
-# # ─────────────────────────────────────────────────────────────────────────────
-# # 3. Merge config.jsons
-# # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. Merge config.jsons
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 rule jbrowse_merge_jsons:

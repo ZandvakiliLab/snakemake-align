@@ -188,3 +188,21 @@ def get_multiqc_input(wildcards):
         strand=["plus", "minus"],
     )
     return result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helpers to clean urls to loads tracks on jbrowse
+# ─────────────────────────────────────────────────────────────────────────────
+
+_default_prefix = str(workflow.storage_settings.default_storage_prefix or "")
+_local_prefix = str(workflow.storage_settings.local_storage_prefix or "")
+
+
+def strip_prefix(path):
+    if isinstance(path, list):
+        return [strip_prefix(p) for p in path]
+    p = str(path)
+    for prefix in (_default_prefix, _local_prefix):
+        if prefix and prefix in p:
+            p = p.split(prefix, 1)[-1].lstrip("/")
+    return p
