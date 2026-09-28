@@ -5,13 +5,13 @@
 
 rule efetch_accession:
     output:
-        "results/ncbi/{ref}_accession.txt",
+        "results/ncbi/{genome}_accession.txt",
     log:
-        "results/ncbi/{ref}_accession.log",
+        "results/ncbi/{genome}_accession.log",
     conda:
         "../envs/efetch.yml"
     params:
-        genbank_id=lambda wc: REFS[wc.ref]["datasets"]["genbank"],
+        genbank_id=lambda wc: REFS[wc.genome]["datasets"]["genbank"],
     message:
         "get genome assembly accession from genbank id"
     shell:
@@ -32,20 +32,20 @@ rule efetch_accession:
 rule ncbi_datasets:
     input:
         branch(
-            lambda wc: REFS[wc.ref]["datasets"]["assembly"],
+            lambda wc: REFS[wc.genome]["datasets"]["assembly"],
             then=[],
             otherwise=rules.efetch_accession.output,
         ),
     output:
-        fasta="results/ncbi/{ref}.fasta",
-        gff="results/ncbi/{ref}.gff3",
+        fasta="results/ncbi/{genome}.fasta",
+        gff="results/ncbi/{genome}.gff3",
     log:
-        "results/ncbi/{ref}.log",
+        "results/ncbi/{genome}.log",
     conda:
         "../envs/ncbi_datasets.yml"
     params:
-        accession=lambda wc: REFS[wc.ref]["datasets"]["assembly"],
-        extra=lambda wc: REFS[wc.ref]["datasets"]["extra"] or "",
+        accession=lambda wc: REFS[wc.genome]["datasets"]["assembly"],
+        extra=lambda wc: REFS[wc.genome]["datasets"]["extra"] or "",
     message:
         "download genome genome from NCBI"
     shell:
@@ -82,16 +82,16 @@ rule ncbi_datasets:
 rule get_genome:
     input:
         branch(
-            lambda wc: REFS[wc.ref]["source"] == "local",
-            then=lambda wc: REFS[wc.ref]["local"]["fasta"],
+            lambda wc: REFS[wc.genome]["source"] == "local",
+            then=lambda wc: REFS[wc.genome]["local"]["fasta"],
             otherwise=rules.ncbi_datasets.output.fasta,
         ),
     output:
-        "results/genome/{ref}.fasta",
+        "results/genome/{genome}.fasta",
     log:
-        "results/genome/{ref}_fasta.log",
+        "results/genome/{genome}_fasta.log",
     wildcard_constraints:
-        ref="|".join(REF_KEYS),
+        genome="|".join(REF_KEYS),
     conda:
         "../envs/basic.yml"
     message:
@@ -107,16 +107,16 @@ rule get_genome:
 rule get_gff:
     input:
         branch(
-            lambda wc: REFS[wc.ref]["source"] == "local",
-            then=lambda wc: REFS[wc.ref]["local"]["gff"],
+            lambda wc: REFS[wc.genome]["source"] == "local",
+            then=lambda wc: REFS[wc.genome]["local"]["gff"],
             otherwise=rules.ncbi_datasets.output.gff,
         ),
     output:
-        "results/genome/{ref}.gff",
+        "results/genome/{genome}.gff",
     log:
-        "results/genome/{ref}_gff.log",
+        "results/genome/{genome}_gff.log",
     wildcard_constraints:
-        ref="|".join(REF_KEYS),
+        genome="|".join(REF_KEYS),
     conda:
         "../envs/basic.yml"
     shell:
@@ -137,13 +137,13 @@ rule add_prefix_to_fasta:
     input:
         rules.get_genome.output,
     output:
-        "results/genome/{ref}_prefixed.fasta",
+        "results/genome/{genome}_prefixed.fasta",
     log:
-        "results/genome/{ref}_prefixed.fasta.log",
+        "results/genome/{genome}_prefixed.fasta.log",
     conda:
         "../envs/basic.yml"
     params:
-        prefix=lambda wc: REFS[wc.ref]["prefix"],
+        prefix=lambda wc: REFS[wc.genome]["prefix"],
     shell:
         """
         awk -v pfx="{params.prefix}" '
@@ -161,13 +161,13 @@ rule add_prefix_to_gff:
     input:
         rules.get_gff.output,
     output:
-        "results/genome/{ref}_prefixed.gff",
+        "results/genome/{genome}_prefixed.gff",
     log:
-        "results/genome/{ref}_prefixed.gff.log",
+        "results/genome/{genome}_prefixed.gff.log",
     conda:
         "../envs/basic.yml"
     params:
-        prefix=lambda wc: REFS[wc.ref]["prefix"],
+        prefix=lambda wc: REFS[wc.genome]["prefix"],
     shell:
         """
         awk -v pfx="{params.prefix}" '

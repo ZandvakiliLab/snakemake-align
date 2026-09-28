@@ -20,9 +20,9 @@ rule rseqc_infer_experiment:
         aln=rules.filter_bam.output,
         refgene="results/genome/genome.bed",
     output:
-        "results/rseqc/infer_experiment/{sample}_{subset}.txt",
+        "results/rseqc/infer_experiment/{sample}_{genome}.txt",
     log:
-        "results/rseqc/infer_experiment/{sample}_{subset}.log",
+        "results/rseqc/infer_experiment/{sample}_{genome}.log",
     params:
         extra="--sample-size 10000",
     message:
@@ -35,9 +35,9 @@ rule rseqc_bam_stat:
     input:
         rules.filter_bam.output,
     output:
-        "results/rseqc/bam_stat/{sample}_{subset}.txt",
+        "results/rseqc/bam_stat/{sample}_{genome}.txt",
     log:
-        "results/rseqc/bam_stat/{sample}_{subset}.log",
+        "results/rseqc/bam_stat/{sample}_{genome}.log",
     threads: 2
     params:
         extra="--mapq 5",
@@ -52,9 +52,9 @@ rule deeptools_coverage:
         bam=rules.filter_bam.output,
         bai=rules.samtools_index_processed.output,
     output:
-        "results/deeptools/coverage/{sample}.{subset}.{strand}.bw",
+        "results/deeptools/coverage/{sample}.{genome}.{strand}.bw",
     log:
-        "results/deeptools/coverage/{sample}.{subset}.{strand}.log",
+        "results/deeptools/coverage/{sample}.{genome}.{strand}.log",
     wildcard_constraints:
         strand="plus|minus",
         sample="|".join(samples.index),
@@ -62,7 +62,7 @@ rule deeptools_coverage:
     params:
         effective_genome_size=lambda wc: config["mapping_stats"]["deeptools_coverage"][
             "genome_size"
-        ][wc.subset],
+        ][wc.genome],
         extra=lambda wc: (
             config["mapping_stats"]["deeptools_coverage"]["extra"]
             + " --filterRNAstrand {strand}".format(

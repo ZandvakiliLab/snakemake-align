@@ -141,6 +141,19 @@ def get_processed_bam_index(wildcards):
         return rules.samtools_index.output
 
 
+def get_region_chromosomes(file_path):
+    chromosomes = set()  # Use a set to avoid duplicates
+    with open(file_path, "r") as file:
+        for line in file:
+            if not line.startswith("#"):  # Skip comment lines
+                columns = line.split("	")
+                if len(columns) > 0:
+                    chromosomes.add(
+                        columns[0]
+                    )  # Assuming chromosome is in the first column
+    return " ".join(chromosomes)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers for MultiQC
 # ─────────────────────────────────────────────────────────────────────────────

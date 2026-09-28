@@ -140,6 +140,22 @@ rule markduplicates_bam:
         "v9.15.0/bio/picard/markduplicates"
 
 
+rule samtools_index_dedup:
+    input:
+        get_processed_bam,
+    output:
+        temp("results/processed_alignment/dedup/{tool}/{sample}.bam.bai"),
+    log:
+        "results/processed_alignment/dedup/{tool}/{sample}_index.log",
+    threads: 2
+    params:
+        extra=config["mapping_postprocessing"]["samtools_index"]["extra"],
+    message:
+        "index reads"
+    wrapper:
+        "v9.4.1/bio/samtools/index"
+
+
 ########################
 # FILTER RULES
 ########################
@@ -147,17 +163,19 @@ rule markduplicates_bam:
 
 rule filter_bam:
     input:
-        get_processed_bam,
+        bam=get_processed_bam,
+        bai=get_processed_bam_index,
+        gff=rules.get_gff.output,
     output:
-        bam="results/processed_alignment/filtered_bam/{subset}/{sample}.bam",
+        bam="results/processed_alignment/filtered_bam/{genome}/{sample}.bam",
     log:
-        "results/processed_alignment/filtered_bam/{subset}/{sample}.log",
+        "results/processed_alignment/filtered_bam/{genome}/{sample}.log",
     threads: 2
     params:
         extra=lambda wc: config.get("mapping_postprocessing", {})
         .get("filter", {})
-        .get(wc.subset, ""),
-        region="",  # optional region string 
+        .get(wc.genome, ""),
+        region=lambda wc, input: get_region_chromosomes(input.gff[0]),
     wrapper:
         "v9.15.0/bio/samtools/view"
 
@@ -166,9 +184,9 @@ rule samtools_index_processed:
     input:
         rules.filter_bam.output,
     output:
-        temp("results/processed_alignment/filtered_bam/{subset}/{sample}.bam.bai"),
+        temp("results/processed_alignment/filtered_bam/{genome}/{sample}.bam.bai"),
     log:
-        "results/processed_alignment/filtered_bam/{subset}/{sample}_index.log",
+        "results/processed_alignment/filtered_bam/{genome}/{sample}_index.log",
     threads: 2
     params:
         extra=config["mapping_postprocessing"]["samtools_index"]["extra"],
@@ -188,9 +206,9 @@ rule bam_to_cram:
         bam=rules.filter_bam.output,
         fa="results/genome/genome.fasta",
     output:
-        "results/processed_alignment/cram/{sample}_{subset}.cram",
+        "results/processed_alignment/cram/{sample}_{genome}.cram",
     log:
-        "results/processed_alignment/cram/{sample}_{subset}.cram.log",
+        "results/processed_alignment/cram/{sample}_{genome}.cram.log",
     threads: 2
     params:
         extra=lambda wildcards, input: f"-C -T {input.fa}",  # optional params string
@@ -203,9 +221,9 @@ rule index_cram:
     input:
         rules.bam_to_cram.output,
     output:
-        "results/processed_alignment/cram/{sample}_{subset}.cram.crai",
+        "results/processed_alignment/cram/{sample}_{genome}.cram.crai",
     log:
-        "results/processed_alignment/cram/{sample}_{subset}_index.log",
+        "results/processed_alignment/cram/{sample}_{genome}_index.log",
     threads: 4  # This value - 1 will be sent to -@
     params:
         extra="",  # optional params string
