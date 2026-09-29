@@ -18,7 +18,7 @@ rule jbrowse_add_assembly:
     input:
         fa="results/genome/{genome}.2bit",
     output:
-        config=temp("jbrowse/config_{genome}_assembly.json"),
+        config=temp("results/jbrowse/config_{genome}_assembly.json"),
     log:
         "results/jbrowse/add_assembly_{genome}.log",
     conda:
@@ -87,9 +87,9 @@ rule jbrowse_add_anno:
     input:
         gff="results/genome/{genome}.sorted.gff.gz",
         tbi="results/genome/{genome}.sorted.gff.gz.tbi",
-        config="jbrowse/config_{genome}_assembly.json",
+        config="results/jbrowse/config_{genome}_assembly.json",
     output:
-        config=temp("jbrowse/config_{genome}_anno.json"),
+        config=temp("results/jbrowse/config_{genome}_anno.json"),
     log:
         "results/jbrowse/add_anno_{genome}.log",
     conda:
@@ -129,7 +129,7 @@ rule jbrowse_add_anno:
 
 rule jbrowse_add_bw:
     input:
-        config="jbrowse/config_{genome}_anno.json",
+        config="results/jbrowse/config_{genome}_anno.json",
         plus_bw=expand(
             "results/deeptools/coverage/{sample}.{{genome}}.plus.bw",
             sample=samples.index,
@@ -139,7 +139,7 @@ rule jbrowse_add_bw:
             sample=samples.index,
         ),
     output:
-        config=temp("jbrowse/config_{genome}_bw.json"),
+        config=temp("results/jbrowse/config_{genome}_bw.json"),
     log:
         "results/jbrowse/add_bw_{genome}.log",
     conda:
@@ -196,13 +196,13 @@ rule jbrowse_add_bw:
 
 rule jbrowse_add_cram:
     input:
-        config="jbrowse/config_{genome}_bw.json",
+        config="results/jbrowse/config_{genome}_bw.json",
         cram=expand(
             "results/processed_alignment/cram/{sample}_{{genome}}.cram",
             sample=samples.index,
         ),
     output:
-        config=temp("jbrowse/config_{genome}_cram.json"),
+        config=temp("results/jbrowse/config_{genome}_cram.json"),
     log:
         "results/jbrowse/add_cram_{genome}.log",
     conda:
@@ -245,11 +245,11 @@ rule jbrowse_add_cram:
 rule jbrowse_merge_jsons:
     input:
         config_files=expand(
-            "jbrowse/config_{genome}_cram.json",
+            "results/jbrowse/config_{genome}_cram.json",
             genome=list(config["jbrowse"]["add_assembly"].keys()),
         ),
     output:
-        "jbrowse/config.json",
+        "results/jbrowse/config.json",
     log:
         "results/jbrowse/merge_config_json.log",
     conda:
