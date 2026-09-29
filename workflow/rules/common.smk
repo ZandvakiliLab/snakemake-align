@@ -209,7 +209,7 @@ def get_multiqc_input(wildcards):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Helpers to clean urls to loads tracks on jbrowse
+# Helpers to clean paths when --default-storage-prefix flag is used
 # ─────────────────────────────────────────────────────────────────────────────
 
 _default_prefix = str(workflow.storage_settings.default_storage_prefix or "")
