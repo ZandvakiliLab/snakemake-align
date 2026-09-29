@@ -83,7 +83,7 @@ rule get_genome:
     input:
         branch(
             lambda wc: REFS[wc.genome]["source"] == "local",
-            then=lambda wc: REFS[wc.genome]["local"]["fasta"],
+            then=lambda wc: local(REFS[wc.genome]["local"]["fasta"]),
             otherwise=rules.ncbi_datasets.output.fasta,
         ),
     output:
@@ -108,7 +108,7 @@ rule get_gff:
     input:
         branch(
             lambda wc: REFS[wc.genome]["source"] == "local",
-            then=lambda wc: REFS[wc.genome]["local"]["gff"],
+            then=lambda wc: local(REFS[wc.genome]["local"]["gff"]),
             otherwise=rules.ncbi_datasets.output.gff,
         ),
     output:
