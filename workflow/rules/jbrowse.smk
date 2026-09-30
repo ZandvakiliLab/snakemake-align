@@ -230,7 +230,7 @@ rule jbrowse_add_cram:
                     --target {output.config} \
                     --name "${{i##*/}}" \
                     --assemblyNames {wildcards.genome} \
-                    --config '{{"displays":[{{"type":"LinearPileupDisplay", "colorBySetting": {{"type": "strand"}}}}]}}' \
+                    --config '{{"displays":[{{"type":"LinearPileupDisplay", "showLegend": true, "colorBySetting": {{"type": "stranded"}}}}]}}' \
                     {params.extra}
             done
         ) >{log} 2>&1
