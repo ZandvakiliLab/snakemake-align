@@ -219,7 +219,7 @@ rule jbrowse_add_cram:
         """
         (
             cp {input.config} {output.config}
-            for i in {input.cram}; do
+            for i in {params.clean_path}; do
 
                 # Get url/path to annotation files
                 path_to_cram="{params.url_prefix}$i"
