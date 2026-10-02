@@ -194,8 +194,8 @@ rule concatenate_reference:
     log:
         "results/genome/genome.{filetype}.log",
     conda:
-        "../envs/basic.yml"
+        "../envs/seqtk.yml"
     message:
         "concatenate fasta files"
     shell:
-        "cat {input} > {output} 2> {log}"
+        "cat {input} | seqtk seq -l 60 > {output} 2> {log}"
