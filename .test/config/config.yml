@@ -79,6 +79,7 @@ mapping_stats:
     genome_size:
       cmv: 236000
       human: 3130250755
+    normalizeUsing: "CPM"
     extra: ""
 
 # Configs for multiqc
