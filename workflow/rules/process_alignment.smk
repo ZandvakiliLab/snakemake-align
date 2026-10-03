@@ -165,7 +165,7 @@ rule filter_bam:
     input:
         bam=get_processed_bam,
         bai=get_processed_bam_index,
-        gff=rules.get_gff.output,
+        regions=rules.get_chr_bed.output,
     output:
         bam="results/processed_alignment/filtered_bam/{genome}/{sample}.bam",
     log:
@@ -175,7 +175,8 @@ rule filter_bam:
         extra=lambda wc: config.get("mapping_postprocessing", {})
         .get("filter", {})
         .get(wc.genome, ""),
-        region=lambda wc, input: get_region_chromosomes(input.gff[0]),
+    message:
+        "filter BAM file to individual chromosomes for {wildcards.sample} and {wildcards.genome}"
     wrapper:
         "v9.15.0/bio/samtools/view"
 

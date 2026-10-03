@@ -1,6 +1,8 @@
-name: samtools
+name: get_chr_bed
 channels:
   - conda-forge
   - bioconda
+  - defaults
 dependencies:
+  - conda-forge::gawk=5.4.1
   - bioconda::samtools=1.21

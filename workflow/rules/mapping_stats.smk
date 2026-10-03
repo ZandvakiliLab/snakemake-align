@@ -46,6 +46,7 @@ rule rseqc_bam_stat:
     wrapper:
         "v5.0.0/bio/rseqc/bam_stat"
 
+
 rule deeptools_coverage_without_normalization:
     # Good for sparse or empty BAM files
     input:
@@ -73,6 +74,7 @@ rule deeptools_coverage_without_normalization:
         "generate {wildcards.strand}-strand coverage using deeptools for sample {wildcards.sample}"
     wrapper:
         "v5.6.0/bio/deeptools/bamcoverage"
+
 
 rule deeptools_coverage:
     input:
@@ -104,6 +106,7 @@ rule deeptools_coverage:
     wrapper:
         "v5.6.0/bio/deeptools/bamcoverage"
 
+
 checkpoint samtools_count:
     input:
         rules.filter_bam.output,
@@ -114,22 +117,23 @@ checkpoint samtools_count:
     wildcard_constraints:
         strand="plus|minus",
         sample="|".join(samples.index),
+    conda:
+        "../envs/samtools.yml"
     params:
         extra="-c",
     message:
         "count number of reads aligning to {wildcards.genome} in sample {wildcards.sample}"
-    conda:
-        "../envs/samtools.yml"
     shell:
         "samtools view -c {input} > {output} 2> {log}"
 
+
 rule bigwig:
     input:
-        choose_bamCoverage_method
+        choose_bamCoverage_method,
     output:
-        "results/deeptools/coverage/{sample}.{genome}.{strand}.bw"
+        "results/deeptools/coverage/{sample}.{genome}.{strand}.bw",
     log:
-        "results/deeptools/coverage/{sample}.{genome}.{strand}.move.log"
+        "results/deeptools/coverage/{sample}.{genome}.{strand}.move.log",
     conda:
         "../envs/basic.yml"
     shell:

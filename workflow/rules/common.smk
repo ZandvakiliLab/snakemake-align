@@ -141,27 +141,19 @@ def get_processed_bam_index(wildcards):
         return rules.samtools_index.output
 
 
-def get_region_chromosomes(file_path):
-    chromosomes = set()  # Use a set to avoid duplicates
-    with open(file_path, "r") as file:
-        for line in file:
-            if not line.startswith("#"):  # Skip comment lines
-                columns = line.split("	")
-                if len(columns) > 0:
-                    chromosomes.add(
-                        columns[0]
-                    )  # Assuming chromosome is in the first column
-    return " ".join(chromosomes)
-
-
 def choose_bamCoverage_method(wildcards):
     flag = checkpoints.samtools_count.get(**wildcards).output[0]
     category = int(open(flag).read().strip())
-    threshold = config.get("mapping_stats", {}).get("deeptools_coverage", {}).get("threshold", 100)
+    threshold = (
+        config.get("mapping_stats", {})
+        .get("deeptools_coverage", {})
+        .get("threshold", 100)
+    )
     if category > threshold:
         return rules.deeptools_coverage.output
     else:
         return rules.deeptools_coverage_without_normalization.output
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers for MultiQC

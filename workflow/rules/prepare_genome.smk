@@ -199,3 +199,28 @@ rule concatenate_reference:
         "concatenate fasta files"
     shell:
         "cat {input} | seqtk seq -l 60 > {output} 2> {log}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. Create BED file of reference contigs
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Snakemake rule of taking a fasta and converting to a bed file of chromosomes
+
+
+rule get_chr_bed:
+    input:
+        "results/genome/{genome}.fasta",
+    output:
+        "results/genome/{genome}.bed",
+    log:
+        "results/genome/{genome}.bed.log",
+    conda:
+        "../envs/get_chr_bed.yml"
+    message:
+        "create bed file of reference contigs"
+    shell:
+        """
+        samtools faidx {input} 2>{log}
+        awk '{{print $1 "\t0\t" $2}}' {input}.fai >{output}
+        """
