@@ -94,7 +94,7 @@ rule deeptools_coverage:
         ][wc.genome],
         extra=lambda wc: (
             config["mapping_stats"]["deeptools_coverage"]["extra"]
-            + "--normalizeUsing {norm}".format(
+            + " --normalizeUsing {norm}".format(
                 norm=config["mapping_stats"]["deeptools_coverage"]["normalizeUsing"]
             )
             + " --filterRNAstrand {strand}".format(
