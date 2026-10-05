@@ -111,9 +111,9 @@ checkpoint samtools_count:
     input:
         rules.filter_bam.output,
     output:
-        "results/processed_alignment/filtered_bam/{genome}/{sample}.count",
+        local("results/processed_alignment/filtered_bam/{genome}/{sample}.count"),
     log:
-        "results/processed_alignment/filtered_bam/{genome}/{sample}.count.log",
+        local("results/processed_alignment/filtered_bam/{genome}/{sample}.count.log"),
     wildcard_constraints:
         strand="plus|minus",
         sample="|".join(samples.index),
