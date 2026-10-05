@@ -196,9 +196,15 @@ rule concatenate_reference:
     conda:
         "../envs/seqtk.yml"
     message:
-        "concatenate fasta files"
+        "concatenate reference {wildcards.filetype} file"
     shell:
-        "cat {input} | seqtk seq -l 60 > {output} 2> {log}"
+        """
+        if [ "{wildcards.filetype}" = "fasta" ]; then
+            cat {input} | seqtk seq -l 60 > {output} 2> {log}
+        else
+            cat {input} > {output} 2> {log}
+        fi
+        """
 
 
 # ─────────────────────────────────────────────────────────────────────────────
